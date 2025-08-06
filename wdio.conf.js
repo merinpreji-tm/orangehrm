@@ -35,8 +35,8 @@ export const config = {
     //
     specs: [
         // './test/specs/orangehrm-test.spec.js'
-        './test/specs/sample.spec.js'
-        // './test/specs/orangehrm.spec.js'
+        './test/specs/sample.spec.js' ,
+        './test/specs/orangehrm.spec.js'
         // './test/specs/fileUpload.js'
     ],
     // Patterns to exclude.
@@ -59,7 +59,7 @@ export const config = {
     // and 30 processes will get spawned. The property handles how many capabilities
     // from the same test should run tests.
     //
-    maxInstances: 10,
+    maxInstances: 1,
     //
     // If you have trouble getting all important capabilities together, check out the
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
