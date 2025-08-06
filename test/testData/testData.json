@@ -1,0 +1,64 @@
+{
+  "login": {
+    "username": "Admin",
+    "password": "admin123"
+  },
+  "user": {
+    "userRole": "ESS",
+    "searchValue": "John Middle Doe",
+    "employeeName": "John Doe",
+    "status": "Enabled",
+    "username": "bobjohnolp",
+    "password": "Radha@123#"
+  },
+  "personalDetails": {
+    "firstName": "John",
+    "middleName": "Middle",
+    "lastName": "Doe",
+    "employeeId": "1234dr",
+    "otherId": "345",
+    "drivingLicenseNumber": "12345678",
+    "drivingLicenseExpiryDate": "2025-19-09",
+    "nationality": "Indian",
+    "maritalStatus": "Married",
+    "dob": "1997-12-12",
+    "gender": "Male",
+    "bloodGroup": "A-",
+    "testValue": "123er",
+    "filePath": "C:/Users/MerinPReji/Downloads/file-sample_150kB.pdf",
+    "comments": "File Upload"
+  },
+  "workExperience": {
+    "companyName": "ABC Company",
+    "jobTitle": "Tester",
+    "fromDate": "2024-09-04",
+    "toDate": "2025-12-25",
+    "comments": "Work Exp"
+  },
+  "education": {
+    "level": "Btech",
+    "institute": "ABC",
+    "specialization": "CSE",
+    "year": "2023",
+    "score": "90",
+    "startDate": "2024-09-04",
+    "endDate": "2025-01-14"
+  },
+  "skills": {
+    "skill": "Java",
+    "yearOfExperience": "3",
+    "comments": "Skills"
+  },
+  "languages": {
+    "language": "English",
+    "fluency": "Reading",
+    "competency": "Good",
+    "comments": "fine"
+  },
+  "licenseDetails": {
+    "licenseType": "Microsoft Certified Systems Engineer (MCSE)",
+    "licenseNumber": "098765434567",
+    "issuedDate": "2022-01-14",
+    "expiryDate": "2028-01-14"
+  }
+}

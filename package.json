@@ -1,0 +1,27 @@
+{
+  "name": "orangehrm",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "wdio run ./wdio.conf.js",
+    "allureCombine": "node ./node_modules/allure-single-html-file-js/combine.js ./test/.artifacts/allure-report",
+    "openReport": "allure open test/.artifacts/allure-report"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@wdio/allure-reporter": "^9.12.3",
+    "@wdio/cli": "^9.12.4",
+    "@wdio/jasmine-framework": "^9.12.4",
+    "@wdio/local-runner": "^9.12.4",
+    "@wdio/spec-reporter": "^9.12.3",
+    "allure-commandline": "^2.33.0",
+    "wdio-json-html-reporter": "^1.5.14"
+  },
+  "dependencies": {
+    "allure-single-html-file-js": "^0.0.6",
+    "exceljs": "^4.4.0"
+  }
+}
