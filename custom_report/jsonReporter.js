@@ -32,8 +32,8 @@ export default class JSONReporter extends WDIOReporter {
 		const timestamp = new Date().toISOString();
 		const suiteName = test.parent || 'Default Suite';
 		const error = test.error ? this.sanitizeErrorMessage(test.error.message) : '';
-		const screenshotPath = await this.getScreenshotPath(test.title) || '';
-		this.testResults.push({ timestamp, suiteName, testName: test.title, status, error, screenshotPath });
+		const screenshotPath = await this.getScreenshotPath(test.title) || ''; // added
+		this.testResults.push({ timestamp, suiteName, testName: test.title, status, error, screenshotPath }); // edited
 	}
 
 	writeJSONReport() {
@@ -59,6 +59,7 @@ export default class JSONReporter extends WDIOReporter {
 		fs.mkdirSync(dirname, { recursive: true });
 	}
 
+	// added
 	async getScreenshotPath(testTitle) {
 		try {
 			const folderPath = "test/.artifacts/allure-results";
