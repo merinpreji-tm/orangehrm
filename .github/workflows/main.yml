@@ -18,6 +18,9 @@ jobs:
           node-version: 22.14.0
       - name: Install Dependencies
         run: npm install
+      - name: Create .env file from workflow inputs
+        run: |
+          echo runName=${{ github.event.inputs.runName }} >> .env
       - name: Run Selected Test
         run: |
           npx wdio run ./wdio.conf.js --spec sample.spec.js --runName "${{ github.event.inputs.runName }}"
