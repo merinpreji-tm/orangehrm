@@ -4,11 +4,13 @@ import { existsSync, mkdirSync, rmSync } from 'fs';
 import JSONReporter from './custom_report/jsonReporter.js';
 import JSONToExcelConverter from './custom_report/jsonConvertor.js';
 import JSONToCSVConverter from './custom_report/jsonToCsvConverter.js';
+import ExcelSummary from './custom_report/excelSummary.js';
 import path from 'path';
 let apiMock;
 
 const excelConverter = new JSONToExcelConverter('test/.artifacts/test-report.xlsx');
-const csvConverter = new JSONToCSVConverter('test/.artifacts/test-report.csv')
+const csvConverter = new JSONToCSVConverter('test/.artifacts/test-report.csv');
+const excelSummary = new ExcelSummary('test-summary.xlsx');
 
 // let apiCalls;
 export const config = {
@@ -35,8 +37,8 @@ export const config = {
     //
     specs: [
         // './test/specs/orangehrm-test.spec.js'
-        './test/specs/sample.spec.js' ,
-        './test/specs/orangehrm.spec.js'
+        './test/specs/sample.spec.js',
+        // './test/specs/orangehrm.spec.js'
         // './test/specs/fileUpload.js'
     ],
     // Patterns to exclude.
@@ -70,7 +72,7 @@ export const config = {
         "goog:chromeOptions": {
             args: ["--disable-gpu"],
         },
-        'wdio:enforceWebDriverClassic':true,
+        'wdio:enforceWebDriverClassic': true,
     }],
 
     //
@@ -150,7 +152,7 @@ export const config = {
             disableWebdriverStepsReporting: true,
             disableWebdriverScreenshotsReporting: false,
         }],
-        [JSONReporter, {outputFile: 'test/.artifacts/json-reports/test-results.json'}]
+        [JSONReporter, { outputFile: 'test/.artifacts/json-reports/test-results.json' }]
     ],
 
 
@@ -182,33 +184,33 @@ export const config = {
      */
 
     onPrepare: function (config, capabilities) {
-    // console.log('onPrepare hook triggered');
+        // console.log('onPrepare hook triggered');
 
-    const dir = 'test/.artifacts';
-    // const tmpFilesPath = './tmp';
+        const dir = 'test/.artifacts';
+        // const tmpFilesPath = './tmp';
 
-    // try {
-    //     if (!existsSync(tmpFilesPath)) {
-    //         mkdirSync(tmpFilesPath);
-    //         console.log('tmp folder created');
-    //     }
-    // } catch (err) {
-    //     console.error('Error creating tmp folder:', err);
-    // }
+        // try {
+        //     if (!existsSync(tmpFilesPath)) {
+        //         mkdirSync(tmpFilesPath);
+        //         console.log('tmp folder created');
+        //     }
+        // } catch (err) {
+        //     console.error('Error creating tmp folder:', err);
+        // }
 
-    if (existsSync(dir)) {
-        try {
-            rmSync(dir, { recursive: true, force: true });
-            console.log(`${dir} artifacts is cleared`);
-        } catch (err) {
-            console.error('Failed to clear artifacts:', err);
+        if (existsSync(dir)) {
+            try {
+                rmSync(dir, { recursive: true, force: true });
+                console.log(`${dir} artifacts is cleared`);
+            } catch (err) {
+                console.error('Failed to clear artifacts:', err);
+            }
+        } else {
+            console.log('No artifacts directory to clear');
         }
-    } else {
-        console.log('No artifacts directory to clear');
-    }
-},
+    },
 
-    
+
     /**
      * Gets executed before a worker process is spawned and can be used to initialize specific service
      * for that worker as well as modify runtime environments in an async fashion.
@@ -311,8 +313,8 @@ export const config = {
         //     let logInfo = `URL: ${call.url}\nMethod: ${call.method}\nStatusCode: ${call.statusCode}`;
         //     allureReporter.addAttachment(`${call.method} : ${call.url}`, logInfo, 'text/plain');
         // });
-    // },
-// afterTest: async function (test, context, { error, result, duration, passed, retries }) {
+        // },
+        // afterTest: async function (test, context, { error, result, duration, passed, retries }) {
         // Take a screenshot at the end of each test
         // if(error){
         // await browser.takeScreenshot();
@@ -325,7 +327,7 @@ export const config = {
         //     AllureReporter.addAttachment(`${call.method}: ${call.url}`, logInfo, 'text/plain');
         //   });
         // }
-      },
+    },
 
     /**
      * Hook that gets executed after the suite has ended
@@ -372,9 +374,10 @@ export const config = {
         const generation = allure(['generate', 'test/.artifacts/allure-results', '--report-dir', 'test/.artifacts/allure-report']);
         await excelConverter.convertJSONFolderToExcel('test/.artifacts/json-reports');
         await csvConverter.convertJSONFolderToCSV('test/.artifacts/json-reports');
+        await excelSummary.addTestSummaryToExcel('test/.artifacts/json-reports');
         return new Promise((resolve, reject) => {
             const generationTimeout = setTimeout(() => reject(reportError), 30000); // 30 seconds
-            generation.on('exit', function (exitCode){
+            generation.on('exit', function (exitCode) {
                 clearTimeout(generationTimeout);
                 if (exitCode !== 0) {
                     return reject(reportError);
@@ -384,7 +387,7 @@ export const config = {
             });
         });
     },
-    
+
     /**
     * Gets executed when a refresh happens.
     * @param {string} oldSessionId session ID of the old session

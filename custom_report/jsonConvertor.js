@@ -65,8 +65,6 @@ export default class JSONToExcelConverter {
 			{ header: 'Screenshot', key: 'screenshotPath', width: 40 } // added
 		];
 
-		const screenshotCol = 5; // added
-
 		// Apply styles to headers
 		this.worksheet.getRow(1).eachCell(cell => {
 			cell.style = this.styles.header;
@@ -95,6 +93,7 @@ export default class JSONToExcelConverter {
 			});
 
 			// added
+			const colNumber = 5; // Screenshot column
 			if (testResult.screenshotPath && fs.existsSync(testResult.screenshotPath)) {
 				const imageId = this.workbook.addImage({
 					filename: testResult.screenshotPath,
@@ -102,7 +101,6 @@ export default class JSONToExcelConverter {
 				});
 
 				const rowNumber = index + 2; // Row number in Excel
-				const colNumber = screenshotCol; // Screenshot column
 
 				// Clear the cell value (remove text path)
 				const screenshotCell = this.worksheet.getCell(rowNumber, colNumber);
@@ -118,7 +116,7 @@ export default class JSONToExcelConverter {
 					ext: { width: 250, height: 140 }, // Image size in pixels
 				});
 			} else {
-				const screenshotCell = this.worksheet.getCell(index + 2, screenshotCol);
+				const screenshotCell = this.worksheet.getCell(index + 2, colNumber);
 				screenshotCell.value = 'No Screenshot';
 				screenshotCell.alignment = { horizontal: 'center', vertical: 'middle' };
 				screenshotCell.font = { italic: true, color: { argb: '808080' } };
