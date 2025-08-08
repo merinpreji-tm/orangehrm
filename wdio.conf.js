@@ -75,8 +75,8 @@ export const config = {
         browserName: 'chrome',
         'goog:chromeOptions': {
             args: [
+                '--headless',
                 '--disable-gpu',
-                `--user-data-dir=/tmp/chrome-profile-${process.pid}`  // ← unique path per process
             ]
         }
     }],
