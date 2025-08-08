@@ -73,10 +73,12 @@ export const config = {
     //
     capabilities: [{
         browserName: 'chrome',
-        "goog:chromeOptions": {
-            args: ["--disable-gpu"],
-        },
-        'wdio:enforceWebDriverClassic': true,
+        'goog:chromeOptions': {
+            args: [
+                '--disable-gpu',
+                `--user-data-dir=/tmp/chrome-profile-${process.pid}`  // ← unique path per process
+            ]
+        }
     }],
 
     //
