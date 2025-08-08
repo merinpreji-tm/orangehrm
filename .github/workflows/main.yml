@@ -1,0 +1,28 @@
+name: Run Tests and Generate Summary
+on:
+  workflow_dispatch:
+    inputs:
+      runName:
+        description: 'Enter a name for this test run'
+        required: true
+        default: 'Manual Run'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+      - name: Install Dependencies
+        run: npm install
+      - name: Run Selected Test
+        run: |
+          npx wdio run ./wdio.conf.js --spec sample.spec.js --runName "${{ github.event.inputs.runName }}"
+      - name: Upload Test Summary Excel
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary
+          path: test-summary.xlsx
