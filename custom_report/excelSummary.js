@@ -7,6 +7,7 @@ export default class excelSummary {
         this.outputFilePath = outputFilePath;
         this.testResults = [];
         this.workbook = new ExcelJS.Workbook();
+        this.runName = process.env.RUN_NAME || 'Unnamed Run';
         this.initializeStyles();
     }
 
@@ -51,53 +52,24 @@ export default class excelSummary {
         }
     }
 
-    // writeSummary() {
-    //     const summarySheet = this.workbook.addWorksheet('Summary');
-    //     summarySheet.columns = [
-    //         { header: 'Suite Name', key: 'metric', width: 25 },
-    //         { header: 'Total Tests', key: 'total', width: 15 },
-    //         { header: 'Passed Tests', key: 'passed', width: 15 },
-    //         { header: 'Failed Tests', key: 'failed', width: 15 }
-    //     ];
-
-    //     const headerRow = summarySheet.getRow(1);
-    //     headerRow.eachCell(cell => {
-    //         cell.style = this.styles.summaryHeader;
-    //     });
-    //     // Add summary stats
-    //     const summaryStats = this.calculateSummaryStats(); // Assuming you have a method for calculating summary statistics
-    //     summaryStats.forEach(stat => {
-    //         summarySheet.addRow(stat);
-    //     });
-    //     summarySheet.eachRow((row, rowNumber) => {
-    //         if (rowNumber > 1) {
-    //             row.eachCell(cell => {
-    //                 cell.style = this.styles.dataCell;
-    //             });
-    //         }
-    //     });
-    //     summarySheet.views = [{ state: 'frozen', ySplit: 1 }];
-    // }
-
     writeSummary() {
         const summarySheet = this.workbook.addWorksheet('Summary');
         summarySheet.columns = [
-            { header: 'Metric', key: 'metric', width: 25 },
-            { header: 'Value', key: 'value', width: 15 },
+            { header: 'Suite Name', key: 'metric', width: 25 },
+            { header: 'Total Tests', key: 'total', width: 15 },
+            { header: 'Passed Tests', key: 'passed', width: 15 },
+            { header: 'Failed Tests', key: 'failed', width: 15 }
         ];
 
         const headerRow = summarySheet.getRow(1);
         headerRow.eachCell(cell => {
             cell.style = this.styles.summaryHeader;
         });
-
         // Add summary stats
         const summaryStats = this.calculateSummaryStats(); // Assuming you have a method for calculating summary statistics
-
         summaryStats.forEach(stat => {
             summarySheet.addRow(stat);
         });
-
         summarySheet.eachRow((row, rowNumber) => {
             if (rowNumber > 1) {
                 row.eachCell(cell => {
@@ -105,7 +77,6 @@ export default class excelSummary {
                 });
             }
         });
-
         summarySheet.views = [{ state: 'frozen', ySplit: 1 }];
     }
 
@@ -156,37 +127,24 @@ export default class excelSummary {
     }
 
     calculateSummaryStats() {
-        // Example implementation of summary stats calculation
-        const passedCount = this.testResults.filter(test => test.status === 'PASSED').length;
-        const failedCount = this.testResults.filter(test => test.status === 'FAILED').length;
-        const totalCount = this.testResults.length;
+        const statsMap = {};
 
-        return [
-            { metric: 'Total Tests', value: totalCount },
-            { metric: 'Passed Tests', value: passedCount },
-            { metric: 'Failed Tests', value: failedCount },
-        ];
+        for (const test of this.testResults) {
+            const suite = this.runName;
+
+            if (!statsMap[suite]) {
+                statsMap[suite] = { metric: suite, total: 0, passed: 0, failed: 0 };
+            }
+
+            statsMap[suite].total++;
+
+            if (test.status === 'PASSED') {
+                statsMap[suite].passed++;
+            } else if (test.status === 'FAILED') {
+                statsMap[suite].failed++;
+            }
+        }
+
+        return Object.values(statsMap);
     }
-
-    // calculateSummaryStats() {
-    //     const statsMap = {};
-
-    //     for (const test of this.testResults) {
-    //         const suite = test.suiteName || 'Unknown';
-
-    //         if (!statsMap[suite]) {
-    //             statsMap[suite] = { metric: suite, total: 0, passed: 0, failed: 0 };
-    //         }
-
-    //         statsMap[suite].total++;
-
-    //         if (test.status === 'PASSED') {
-    //             statsMap[suite].passed++;
-    //         } else if (test.status === 'FAILED') {
-    //             statsMap[suite].failed++;
-    //         }
-    //     }
-
-    //     return Object.values(statsMap);
-    // }
 }
