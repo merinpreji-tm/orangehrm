@@ -12,6 +12,10 @@ const excelConverter = new JSONToExcelConverter('test/.artifacts/test-report.xls
 const csvConverter = new JSONToCSVConverter('test/.artifacts/test-report.csv');
 const excelSummary = new ExcelSummary('test-summary.xlsx');
 
+const runNameIndex = process.argv.indexOf('--runName');
+const runName = runNameIndex !== -1 ? process.argv[runNameIndex + 1] : 'Unnamed Run';
+process.env.RUN_NAME = runName; // set globally
+
 // let apiCalls;
 export const config = {
     //
@@ -239,10 +243,10 @@ export const config = {
      * @param {Array.<String>} specs List of spec file paths that are to be run
      * @param {string} cid worker id (e.g. 0-0)
      */
-    beforeSession: function (config, capabilities, specs) {
-        const runNameIndex = process.argv.indexOf('--runName');
-        process.env.RUN_NAME = runNameIndex !== -1 ? process.argv[runNameIndex + 1] : 'Unnamed Run';
-    },
+    // beforeSession: function (config, capabilities, specs) {
+    //     const runNameIndex = process.argv.indexOf('--runName');
+    //     process.env.RUN_NAME = runNameIndex !== -1 ? process.argv[runNameIndex + 1] : 'Unnamed Run';
+    // },
     /**
      * Gets executed before test execution begins. At this point you can access to all global
      * variables like `browser`. It is the perfect place to define custom commands.
