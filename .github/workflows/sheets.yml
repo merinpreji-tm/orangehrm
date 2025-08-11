@@ -17,15 +17,14 @@ jobs:
           node-version: 22.14.0
       - name: Install Dependencies
         run: npm install
+      - name: Install GoogleAPIs
+        run: npm install googleapis
       - name: Create .env file from workflow inputs
         run: |
           echo RUN_NAME=${{ github.event.inputs.runName }} >> .env
       - name: Run Selected Test
         run: |
           npx wdio run ./wdio.conf.js --spec sample.spec.js
-      - name: Install dependencies
-        run: npm install googleapis
-
       - name: Run your script
         run: |
           node updateSheet.js
