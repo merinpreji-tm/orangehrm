@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import ExcelJS from 'exceljs';
-import { fail } from 'assert';
 
 export default class excelSummary {
     constructor(outputFilePath) {
@@ -56,22 +55,10 @@ export default class excelSummary {
     }
 
     addTestResult(test) {
-        const suiteName = this.removeSuiteSuffix(test.suiteName || 'Default Suite');
+        const suiteName = this.runName;
         const error = test.error || '';
         const status = test.status || 'UNKNOWN';
         this.testResults.push({ suiteName, testName: test.testName, status, error });
-    }
-
-    removeSuiteSuffix(suiteName) {
-        // Check if the suiteName contains "suite" followed by a number
-        const regex = /suite\d+$/i;
-        if (regex.test(suiteName)) {
-            // If it matches, remove "suite" followed by the number
-            return suiteName.replace(regex, '');
-        } else {
-            // Otherwise, return the original suiteName
-            return suiteName;
-        }
     }
 
     writeSummary() {

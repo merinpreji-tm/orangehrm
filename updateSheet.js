@@ -7,7 +7,6 @@ export default class GoogleSheetsSummary {
         this.spreadsheetId = process.env.SPREADSHEET_ID;
         this.credentials = JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS);
         this.runName = process.env.RUN_NAME || 'Unnamed Run';
-        this.oldTestResults = [];
         this.testResults = [];
         this.sheetsClient = null;
     }
@@ -58,15 +57,10 @@ export default class GoogleSheetsSummary {
     }
 
     addTestResult(test) {
-        const suiteName = this.removeSuiteSuffix(test.suiteName || 'Default Suite');
+        const suiteName = this.runName;
         const status = test.status || 'UNKNOWN';
         const error = test.error || '';
         this.testResults.push({ suiteName, testName: test.testName, status, error });
-    }
-
-    removeSuiteSuffix(suiteName) {
-        const regex = /suite\d+$/i;
-        return regex.test(suiteName) ? suiteName.replace(regex, '') : suiteName;
     }
 
     calculateSummaryStats() {
