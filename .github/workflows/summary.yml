@@ -1,0 +1,41 @@
+name: Generate Summary and Push
+on:
+  workflow_dispatch:
+    inputs:
+      runName:
+        description: 'Enter a name for this test run'
+        required: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+      - name: Install Dependencies
+        run: npm install
+      - name: Create .env file from workflow inputs
+        run: |
+          echo RUN_NAME=${{ github.event.inputs.runName }} >> .env
+      - name: Run Selected Test
+        run: |
+          npx wdio run ./wdio.conf.js --spec sample.spec.js
+      - name: Commit test-summary.xlsx to current branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add test-summary.xlsx
+          git commit -m "Add/Update test-summary.xlsx" || echo "No changes to commit"
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:${GITHUB_REF#refs/heads/}
+      - name: Upload Test Summary Excel
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary
+          path: '**/test-summary.xlsx'
