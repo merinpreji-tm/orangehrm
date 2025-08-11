@@ -18,13 +18,12 @@ import JSONToCSVConverter from './custom_report/jsonToCsvConverter.js';
 import ExcelSummary from './custom_report/excelSummary.js';
 import path from 'path';
 import GoogleSheetsSummary from './updateSheet.js';
-import GoogleSheetsSummary from './updateSheet.js';
 let apiMock;
 
 const excelConverter = new JSONToExcelConverter('test/.artifacts/test-report.xlsx');
 const csvConverter = new JSONToCSVConverter('test/.artifacts/test-report.csv');
 const excelSummary = new ExcelSummary('test-summary.xlsx');
-const googleSheetsSummary = new GoogleSheetsSummary()
+const googleSheetsSummary = new GoogleSheetsSummary();
 
 // let apiCalls;
 export const config = {
