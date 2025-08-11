@@ -19,9 +19,6 @@ jobs:
         run: npm install
       - name: Install GoogleAPIs
         run: npm install googleapis
-      - name: Create .env file from workflow inputs
-        run: |
-          echo RUN_NAME=${{ github.event.inputs.runName }} >> env/.env
       - name: Run Selected Test
         run: |
           npx wdio run ./wdio.conf.js --spec sample.spec.js
@@ -29,6 +26,7 @@ jobs:
         run: |
           node updateSheet.js
         env:
+          RUN_NAME: ${{ github.event.inputs.runName }}
           GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
       - name: Upload Test Summary Excel
