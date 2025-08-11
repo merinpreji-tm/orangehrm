@@ -21,7 +21,7 @@ jobs:
         run: npm install googleapis
       - name: Create .env file from workflow inputs
         run: |
-          echo RUN_NAME=${{ github.event.inputs.runName }} >> .env
+          echo RUN_NAME=${{ github.event.inputs.runName }} >> env/.env
       - name: Run Selected Test
         run: |
           npx wdio run ./wdio.conf.js --spec sample.spec.js
