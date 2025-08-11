@@ -5,7 +5,6 @@ on:
       runName:
         description: 'Enter a name for this test run'
         required: true
-        default: 'Manual Run'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,10 +19,10 @@ jobs:
         run: npm install
       - name: Create .env file from workflow inputs
         run: |
-          echo runName=${{ github.event.inputs.runName }} >> .env
+          echo RUN_NAME=${{ github.event.inputs.runName }} >> .env
       - name: Run Selected Test
         run: |
-          npx wdio run ./wdio.conf.js --spec sample.spec.js --runName "${{ github.event.inputs.runName }}"
+          npx wdio run ./wdio.conf.js --spec sample.spec.js
       - name: Upload Test Summary Excel
         uses: actions/upload-artifact@v4
         with:

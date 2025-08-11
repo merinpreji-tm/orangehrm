@@ -1,3 +1,14 @@
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import dotenv from 'dotenv';
+
+// ESM-safe __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load .env from env folder
+dotenv.config({ path: resolve(__dirname, 'env/.env') });
+
 import allure from 'allure-commandline';
 import allureReporter from '@wdio/allure-reporter';
 import { existsSync, mkdirSync, rmSync } from 'fs';
@@ -11,10 +22,6 @@ let apiMock;
 const excelConverter = new JSONToExcelConverter('test/.artifacts/test-report.xlsx');
 const csvConverter = new JSONToCSVConverter('test/.artifacts/test-report.csv');
 const excelSummary = new ExcelSummary('test-summary.xlsx');
-
-const runNameIndex = process.argv.indexOf('--runName');
-const runName = runNameIndex !== -1 ? process.argv[runNameIndex + 1] : 'Unnamed Run';
-process.env.RUN_NAME = runName; // set globally
 
 // let apiCalls;
 export const config = {
@@ -40,10 +47,10 @@ export const config = {
     // of the config file unless it's absolute.
     //
     specs: [
-        // './test/specs/orangehrm-test.spec.js'
+        './test/specs/orangehrm-test.spec.js',
         './test/specs/sample.spec.js',
-        // './test/specs/orangehrm.spec.js'
-        // './test/specs/fileUpload.js'
+        './test/specs/orangehrm.spec.js',
+        './test/specs/fileUpload.js'
     ],
     // Patterns to exclude.
     exclude: [
@@ -246,8 +253,6 @@ export const config = {
      * @param {string} cid worker id (e.g. 0-0)
      */
     // beforeSession: function (config, capabilities, specs) {
-    //     const runNameIndex = process.argv.indexOf('--runName');
-    //     process.env.RUN_NAME = runNameIndex !== -1 ? process.argv[runNameIndex + 1] : 'Unnamed Run';
     // },
     /**
      * Gets executed before test execution begins. At this point you can access to all global
