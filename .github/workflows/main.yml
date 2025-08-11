@@ -20,6 +20,12 @@ jobs:
       - name: Create .env file from workflow inputs
         run: |
           echo RUN_NAME=${{ github.event.inputs.runName }} >> .env
+      - name: Download previous test summary
+        uses: actions/download-artifact@v4
+        with:
+          name: test-summary
+          path: 
+        continue-on-error: true
       - name: Run Selected Test
         run: |
           npx wdio run ./wdio.conf.js --spec sample.spec.js

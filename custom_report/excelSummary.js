@@ -1,10 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import ExcelJS from 'exceljs';
+import { fail } from 'assert';
 
 export default class excelSummary {
     constructor(outputFilePath) {
         this.outputFilePath = outputFilePath;
+        this.oldTestResults = [];
         this.testResults = [];
         this.workbook = new ExcelJS.Workbook();
         this.runName = process.env.RUN_NAME || 'Unnamed Run';
@@ -12,6 +14,12 @@ export default class excelSummary {
     }
 
     async addTestSummaryToExcel(folderPath) {
+        if (fs.existsSync(this.outputFilePath)) {
+            console.log('Excel file exists!');
+            await this.readExcelFile();
+        } else {
+            console.log('Excel file does not exist.');
+        }
         try {
             const files = fs.readdirSync(folderPath);
             for (const file of files) {
@@ -31,6 +39,20 @@ export default class excelSummary {
         } catch (error) {
             console.error('Error converting JSON to Excel:', error);
         }
+    }
+
+    async readExcelFile() {
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(this.outputFilePath);
+        const worksheet = workbook.getWorksheet('Summary') || workbook.worksheets[0]; // First sheet
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber === 1) return; // skip header row
+            const suiteName = row.getCell(1).value;
+            const total = row.getCell(2).value;
+            const passed = row.getCell(3).value;
+            const failed = row.getCell(4).value;
+            this.oldTestResults.push({ suiteName, total, passed, failed });
+        });
     }
 
     addTestResult(test) {
@@ -55,7 +77,7 @@ export default class excelSummary {
     writeSummary() {
         const summarySheet = this.workbook.addWorksheet('Summary');
         summarySheet.columns = [
-            { header: 'Suite Name', key: 'metric', width: 25 },
+            { header: 'Suite Name', key: 'suiteName', width: 30 },
             { header: 'Total Tests', key: 'total', width: 15 },
             { header: 'Passed Tests', key: 'passed', width: 15 },
             { header: 'Failed Tests', key: 'failed', width: 15 }
@@ -64,6 +86,16 @@ export default class excelSummary {
         const headerRow = summarySheet.getRow(1);
         headerRow.eachCell(cell => {
             cell.style = this.styles.summaryHeader;
+        });
+
+        // Add old test results
+        this.oldTestResults.forEach(result => {
+            summarySheet.addRow({
+                suiteName: result.suiteName,
+                total: result.total,
+                passed: result.passed,
+                failed: result.failed
+            });
         });
         // Add summary stats
         const summaryStats = this.calculateSummaryStats(); // Assuming you have a method for calculating summary statistics
@@ -133,7 +165,7 @@ export default class excelSummary {
             const suite = this.runName;
 
             if (!statsMap[suite]) {
-                statsMap[suite] = { metric: suite, total: 0, passed: 0, failed: 0 };
+                statsMap[suite] = { suiteName: suite, total: 0, passed: 0, failed: 0 };
             }
 
             statsMap[suite].total++;
