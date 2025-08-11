@@ -26,7 +26,8 @@ export default class GoogleSheetsSummary {
         }
     }
 
-    async addTestSummaryToSheet(folderPath) {
+    async addTestSummaryToSheet() {
+        const folderPath = "test/.artifacts/json-reports";
         if (!this.sheetsClient) {
             await this.initializeSheetsClient();
         }
