@@ -1,4 +1,4 @@
-name: Generate Summary and Push
+name: Generate Summary and Update Google Sheet
 on:
   workflow_dispatch:
     inputs:
@@ -8,8 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
