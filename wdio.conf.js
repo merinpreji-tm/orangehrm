@@ -23,7 +23,6 @@ let apiMock;
 const excelConverter = new JSONToExcelConverter('test/.artifacts/test-report.xlsx');
 const csvConverter = new JSONToCSVConverter('test/.artifacts/test-report.csv');
 const excelSummary = new ExcelSummary('test-summary.xlsx');
-const googleSheetsSummary = new GoogleSheetsSummary();
 
 // let apiCalls;
 export const config = {
@@ -390,7 +389,8 @@ export const config = {
         await excelConverter.convertJSONFolderToExcel('test/.artifacts/json-reports');
         await csvConverter.convertJSONFolderToCSV('test/.artifacts/json-reports');
         await excelSummary.addTestSummaryToExcel('test/.artifacts/json-reports');
-        await googleSheetsSummary.addTestSummaryToExcel('test/.artifacts/json-reports');
+        const googleSheetsSummary = new GoogleSheetsSummary();
+        await googleSheetsSummary.addTestSummaryToSheet('test/.artifacts/json-reports');
         return new Promise((resolve, reject) => {
             const generationTimeout = setTimeout(() => reject(reportError), 30000); // 30 seconds
             generation.on('exit', function (exitCode) {
