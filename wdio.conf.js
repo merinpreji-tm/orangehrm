@@ -17,11 +17,14 @@ import JSONToExcelConverter from './custom_report/jsonConvertor.js';
 import JSONToCSVConverter from './custom_report/jsonToCsvConverter.js';
 import ExcelSummary from './custom_report/excelSummary.js';
 import path from 'path';
+import GoogleSheetsSummary from './updateSheet.js';
+import GoogleSheetsSummary from './updateSheet.js';
 let apiMock;
 
 const excelConverter = new JSONToExcelConverter('test/.artifacts/test-report.xlsx');
 const csvConverter = new JSONToCSVConverter('test/.artifacts/test-report.csv');
 const excelSummary = new ExcelSummary('test-summary.xlsx');
+const googleSheetsSummary = new GoogleSheetsSummary()
 
 // let apiCalls;
 export const config = {
@@ -388,6 +391,7 @@ export const config = {
         await excelConverter.convertJSONFolderToExcel('test/.artifacts/json-reports');
         await csvConverter.convertJSONFolderToCSV('test/.artifacts/json-reports');
         await excelSummary.addTestSummaryToExcel('test/.artifacts/json-reports');
+        await googleSheetsSummary.addTestSummaryToExcel('test/.artifacts/json-reports');
         return new Promise((resolve, reject) => {
             const generationTimeout = setTimeout(() => reject(reportError), 30000); // 30 seconds
             generation.on('exit', function (exitCode) {

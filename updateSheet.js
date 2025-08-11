@@ -25,8 +25,7 @@ export default class GoogleSheetsSummary {
         }
     }
 
-    async addTestSummaryToSheet() {
-        const folderPath = "test/.artifacts/json-reports";
+    async addTestSummaryToSheet(folderPath) {
         if (!this.sheetsClient) {
             await this.initializeSheetsClient();
         }
@@ -110,14 +109,3 @@ export default class GoogleSheetsSummary {
         }
     }
 }
-
-// Main execution block
-async function main() {
-    // You'll need to specify the folder where your test results are stored.
-    // WebdriverIO with Allure reporter typically uses a folder like './allure-results'
-    const resultsFolder = './allure-results'; 
-    const summary = new GoogleSheetsSummary();
-    await summary.addTestSummaryToSheet(resultsFolder);
-}
-
-main().catch(console.error);
