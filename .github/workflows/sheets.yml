@@ -36,7 +36,7 @@ jobs:
         env:
           PROJECT: ${{ github.event.inputs.project }}
           SUITE_NAME: ${{ github.event.inputs.suite }}
-          ENV: ${{ github.event.env }}
+          ENV: ${{ github.event.inputs.env }}
           GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
       - name: Upload Test Summary Excel
