@@ -21,9 +21,10 @@ jobs:
         run: npm install googleapis
       - name: Create .env file from workflow inputs
         run: |
-          echo RUN_NAME=${{ github.event.inputs.runName }} >> .env
-          echo GOOGLE_SHEETS_CREDENTIALS=${{ secrets.GOOGLE_SHEETS_CREDENTIALS }} >> .env
-          echo SPREADSHEET_ID=${{ secrets.SPREADSHEET_ID }} >> .env
+          mkdir -p env
+          echo "RUN_NAME=${{ github.event.inputs.runName }}" >> env/.env
+          echo "GOOGLE_SHEETS_CREDENTIALS='${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}'" >> env/.env
+          echo "SPREADSHEET_ID=${{ secrets.SPREADSHEET_ID }}" >> env/.env
       - name: Run Selected Test
         run: |
           npx wdio run ./wdio.conf.js --spec sample.spec.js
