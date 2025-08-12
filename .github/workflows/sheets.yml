@@ -1,4 +1,4 @@
-name: Generate Summary and Update Google Sheet
+name: Update Summary in Google Sheet
 on:
   workflow_dispatch:
     inputs:
