@@ -1,16 +1,5 @@
-// import { fileURLToPath } from 'url';
-// import { dirname, resolve } from 'path';
-// import dotenv from 'dotenv';
-
-// // ESM-safe __dirname
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-
-// // Load .env from env folder
-// dotenv.config({ path: resolve(__dirname, 'env/.env') });
-
 import { google } from 'googleapis';
-import fs from 'fs/promises'; // Use fs.promises for async file operations
+import fs from 'fs/promises';
 import path from 'path';
 
 export default class GoogleSheetsSummary {
@@ -37,12 +26,9 @@ export default class GoogleSheetsSummary {
     }
 
     async addTestSummaryToSheet(folderPath) {
-        // const folderPath = "test/.artifacts/json-reports";
         if (!this.sheetsClient) {
             await this.initializeSheetsClient();
         }
-
-        console.log(`Reading test results from: ${folderPath}`);
         try {
             const files = await fs.readdir(folderPath);
             for (const file of files) {
@@ -62,8 +48,6 @@ export default class GoogleSheetsSummary {
             console.error('Error processing JSON files:', error);
             return;
         }
-
-        // After processing, write the summary
         await this.writeSummaryToSheet();
     }
 
@@ -97,17 +81,14 @@ export default class GoogleSheetsSummary {
             console.log('No test results to write to Google Sheet.');
             return;
         }
-        
         const values = summaryStats.map(stat => [
             stat.suiteName,
             stat.total,
             stat.passed,
             stat.failed
         ]);
-
         const resource = { values };
         const range = 'Summary!A2'; // Append starting from row 2
-
         try {
             await this.sheetsClient.spreadsheets.values.append({
                 spreadsheetId: this.spreadsheetId,
@@ -121,14 +102,3 @@ export default class GoogleSheetsSummary {
         }
     }
 }
-
-// Main execution block
-// async function main() {
-//     // You'll need to specify the folder where your test results are stored.
-//     // WebdriverIO with Allure reporter typically uses a folder like './allure-results'
-//     const resultsFolder = './allure-results'; 
-//     const summary = new GoogleSheetsSummary();
-//     await summary.addTestSummaryToSheet(resultsFolder);
-// }
-
-// main().catch(console.error);

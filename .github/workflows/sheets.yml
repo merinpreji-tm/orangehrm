@@ -19,13 +19,14 @@ jobs:
         run: npm install
       - name: Install GoogleAPIs
         run: npm install googleapis
+      - name: Create .env file from workflow inputs
+        run: |
+          echo RUN_NAME=${{ github.event.inputs.runName }} >> .env
+          echo GOOGLE_SHEETS_CREDENTIALS=${{ secrets.GOOGLE_SHEETS_CREDENTIALS }} >> .env
+          echo SPREADSHEET_ID=${{ secrets.SPREADSHEET_ID }} >> .env
       - name: Run Selected Test
         run: |
           npx wdio run ./wdio.conf.js --spec sample.spec.js
-        env:
-          RUN_NAME: ${{ github.event.inputs.runName }}
-          GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
-          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
       - name: Upload Test Summary Excel
         uses: actions/upload-artifact@v4
         with:
