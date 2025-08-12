@@ -72,6 +72,11 @@ export default class GoogleSheetsSummary {
                 statsMap[suite].failed++;
             }
         }
+        // Calculate pass percentage for each suite
+        for (const suite in statsMap) {
+            const { total, passed } = statsMap[suite];
+            statsMap[suite].passPercentage = total === 0 ? 0 : ((passed / total) * 100).toFixed(2);
+        }
         return Object.values(statsMap);
     }
 
@@ -86,7 +91,8 @@ export default class GoogleSheetsSummary {
             stat.suiteName,
             stat.total,
             stat.passed,
-            stat.failed
+            stat.failed,
+            stat.passPercentage
         ]);
         const resource = { values };
         const range = 'Summary!A2'; // Append starting from row 2
@@ -106,7 +112,7 @@ export default class GoogleSheetsSummary {
     async ensureSheetExists(sheetTitle) {
         try {
             const sheetsMeta = await this.sheetsClient.spreadsheets.get({ spreadsheetId: this.spreadsheetId, });
-            const sheetExists = sheetsMeta.data.sheets.some( sheet => sheet.properties.title === sheetTitle );
+            const sheetExists = sheetsMeta.data.sheets.some(sheet => sheet.properties.title === sheetTitle);
             if (!sheetExists) {
                 console.log(`Creating sheet: ${sheetTitle}`);
                 await this.sheetsClient.spreadsheets.batchUpdate({
@@ -128,5 +134,12 @@ export default class GoogleSheetsSummary {
             console.error('Error checking/creating sheet:', error);
             throw error;
         }
+    }
+
+    calculatePassPercentage() {
+        const summaryStats = this.calculateSummaryStats();
+        const totalCount = summaryStats.total;
+        const passedCount = summaryStats.passed;
+        return ((passedCount / totalCount) * 100).toFixed(2);
     }
 }
