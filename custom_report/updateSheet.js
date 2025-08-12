@@ -58,6 +58,29 @@ export default class GoogleSheetsSummary {
         this.testResults.push({ suiteName, testName: test.testName, status, error });
     }
 
+    async addHeaderRow(sheetName) {
+        try {
+            const response = await this.sheetsClient.spreadsheets.values.get({
+                spreadsheetId: this.spreadsheetId,
+                range: `${sheetName}!A1:E1`,
+            });
+            const rows = response.data.values;
+            if (!rows || rows.length === 0) {
+                const headers = [
+                    ['Suite Name', 'Total tests', 'Passed', 'Failed', 'Pass Percentage']
+                ];
+                await this.sheetsClient.spreadsheets.values.update({
+                    spreadsheetId: this.spreadsheetId,
+                    range: `${sheetName}!A1`,
+                    valueInputOption: 'RAW',
+                    resource: { values: headers },
+                });
+            }
+        } catch (error) {
+            console.error(`Failed to check/add header for sheet "${sheetName}":`, error);
+        }
+    }
+
     calculateSummaryStats() {
         const statsMap = {};
         for (const test of this.testResults) {
@@ -86,6 +109,7 @@ export default class GoogleSheetsSummary {
             console.log('No test results to write to Google Sheet.');
             return;
         }
+        await this.addHeaderRow(this.runName);
         await this.ensureSheetExists(this.runName);
         const values = summaryStats.map(stat => [
             stat.suiteName,
