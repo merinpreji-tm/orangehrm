@@ -71,7 +71,7 @@ export default class GoogleSheetsSummary {
 
             if (!rows || rows.length === 0) {
                 const headers = [
-                    ['Project', 'Suite Name', 'Test Environment', 'Total tests', 'Passed', 'Failed', 'Pass Percentage']
+                    ['Date', 'Project', 'Suite Name', 'Test Environment', 'Total tests', 'Passed', 'Failed', 'Pass Percentage']
                 ];
 
                 await this.sheetsClient.spreadsheets.values.update({
@@ -103,7 +103,7 @@ export default class GoogleSheetsSummary {
                                             startRowIndex: 0,
                                             endRowIndex: 1,
                                             startColumnIndex: 0,
-                                            endColumnIndex: 5,
+                                            endColumnIndex: 8,
                                         },
                                         cell: {
                                             userEnteredFormat: {
@@ -130,7 +130,7 @@ export default class GoogleSheetsSummary {
         for (const test of this.testResults) {
             const suite = this.suiteName;
             if (!statsMap[suite]) {
-                statsMap[suite] = { project:this.project, suiteName: suite, env: this.env, total: 0, passed: 0, failed: 0 };
+                statsMap[suite] = { project: this.project, suiteName: suite, env: this.env, total: 0, passed: 0, failed: 0 };
             }
             statsMap[suite].total++;
             if (test.status === 'PASSED') {
@@ -154,8 +154,11 @@ export default class GoogleSheetsSummary {
             return;
         }
         await this.addHeaderRow('Summary');
-        await this.ensureSheetExists(this.suiteName);
+        // await this.ensureSheetExists(this.suiteName);
+        const now = new Date();
+        const today = `${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}-${now.getFullYear()}`;
         const values = summaryStats.map(stat => [
+            today,
             stat.project,
             stat.suiteName,
             stat.env,
@@ -180,32 +183,32 @@ export default class GoogleSheetsSummary {
         }
     }
 
-    async ensureSheetExists(sheetTitle) {
-        try {
-            const sheetsMeta = await this.sheetsClient.spreadsheets.get({ spreadsheetId: this.spreadsheetId, });
-            const sheetExists = sheetsMeta.data.sheets.some(sheet => sheet.properties.title === sheetTitle);
-            if (!sheetExists) {
-                console.log(`Creating sheet: ${sheetTitle}`);
-                await this.sheetsClient.spreadsheets.batchUpdate({
-                    spreadsheetId: this.spreadsheetId,
-                    requestBody: {
-                        requests: [
-                            {
-                                addSheet: {
-                                    properties: {
-                                        title: sheetTitle,
-                                    },
-                                },
-                            },
-                        ],
-                    },
-                });
-            }
-        } catch (error) {
-            console.error('Error checking/creating sheet:', error);
-            throw error;
-        }
-    }
+    // async ensureSheetExists(sheetTitle) {
+    //     try {
+    //         const sheetsMeta = await this.sheetsClient.spreadsheets.get({ spreadsheetId: this.spreadsheetId, });
+    //         const sheetExists = sheetsMeta.data.sheets.some(sheet => sheet.properties.title === sheetTitle);
+    //         if (!sheetExists) {
+    //             console.log(`Creating sheet: ${sheetTitle}`);
+    //             await this.sheetsClient.spreadsheets.batchUpdate({
+    //                 spreadsheetId: this.spreadsheetId,
+    //                 requestBody: {
+    //                     requests: [
+    //                         {
+    //                             addSheet: {
+    //                                 properties: {
+    //                                     title: sheetTitle,
+    //                                 },
+    //                             },
+    //                         },
+    //                     ],
+    //                 },
+    //             });
+    //         }
+    //     } catch (error) {
+    //         console.error('Error checking/creating sheet:', error);
+    //         throw error;
+    //     }
+    // }
 
     async updatePassTrendChart(sheetName) {
         try {
