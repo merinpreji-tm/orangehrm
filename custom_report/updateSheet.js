@@ -128,8 +128,9 @@ export default class GoogleSheetsSummary {
     calculateSummaryStats() {
         const statsMap = {};
         for (const test of this.testResults) {
+            const suite = this.suiteName;
             if (!statsMap[suite]) {
-                statsMap[suite] = { project:this.project, suiteName: this.suiteName, env: this.env, total: 0, passed: 0, failed: 0 };
+                statsMap[suite] = { project:this.project, suiteName: suite, env: this.env, total: 0, passed: 0, failed: 0 };
             }
             statsMap[suite].total++;
             if (test.status === 'PASSED') {
