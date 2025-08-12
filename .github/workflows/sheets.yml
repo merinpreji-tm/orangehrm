@@ -16,6 +16,14 @@ on:
         options:
           - QA
           - UAT
+      spec:
+        description: 'Select spec file to run'
+        required: true
+        default: test/specs/sample.spec.js
+        type: choice
+        options:
+          - test/specs/sample.spec.js
+          - test/specs/orangehrm.spec.js
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,7 +40,7 @@ jobs:
         run: npm install googleapis
       - name: Run Selected Test
         run: |
-          npx wdio run ./wdio.conf.js --spec sample.spec.js
+          npx wdio run ./wdio.conf.js --spec ${{ github.event.inputs.spec }}
         env:
           PROJECT: ${{ github.event.inputs.project }}
           SUITE_NAME: ${{ github.event.inputs.suite }}
