@@ -6,7 +6,9 @@ export default class GoogleSheetsSummary {
     constructor() {
         this.spreadsheetId = process.env.SPREADSHEET_ID;
         this.credentials = JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS);
-        this.runName = process.env.RUN_NAME || 'Unnamed Run';
+        this.project = process.env.PROJECT || '';
+        this.suiteName = process.env.SUITE_NAME || '';
+        this.env = process.env.ENV || '';
         this.testResults = [];
         this.sheetsClient = null;
     }
@@ -52,7 +54,7 @@ export default class GoogleSheetsSummary {
     }
 
     addTestResult(test) {
-        const suiteName = this.runName;
+        const suiteName = this.suiteName;
         const status = test.status || 'UNKNOWN';
         const error = test.error || '';
         this.testResults.push({ suiteName, testName: test.testName, status, error });
@@ -69,7 +71,7 @@ export default class GoogleSheetsSummary {
 
             if (!rows || rows.length === 0) {
                 const headers = [
-                    ['Suite Name', 'Total tests', 'Passed', 'Failed', 'Pass Percentage']
+                    ['Project', 'Suite Name', 'Test Environment', 'Total tests', 'Passed', 'Failed', 'Pass Percentage']
                 ];
 
                 await this.sheetsClient.spreadsheets.values.update({
@@ -126,9 +128,8 @@ export default class GoogleSheetsSummary {
     calculateSummaryStats() {
         const statsMap = {};
         for (const test of this.testResults) {
-            const suite = this.runName;
             if (!statsMap[suite]) {
-                statsMap[suite] = { suiteName: suite, total: 0, passed: 0, failed: 0 };
+                statsMap[suite] = { project:this.project, suiteName: this.suiteName, env: this.env, total: 0, passed: 0, failed: 0 };
             }
             statsMap[suite].total++;
             if (test.status === 'PASSED') {
@@ -152,9 +153,11 @@ export default class GoogleSheetsSummary {
             return;
         }
         await this.addHeaderRow('Summary');
-        await this.ensureSheetExists(this.runName);
+        await this.ensureSheetExists(this.suiteName);
         const values = summaryStats.map(stat => [
+            stat.project,
             stat.suiteName,
+            stat.env,
             stat.total,
             stat.passed,
             stat.failed,
@@ -170,7 +173,7 @@ export default class GoogleSheetsSummary {
                 resource: resource,
             });
             console.log('Successfully wrote summary to Google Sheet.');
-            await this.updatePassTrendChart(this.runName);
+            await this.updatePassTrendChart(this.suiteName);
         } catch (error) {
             console.error('Error writing to Google Sheet:', error);
         }

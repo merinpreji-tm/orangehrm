@@ -2,9 +2,20 @@ name: Update Summary in Google Sheet
 on:
   workflow_dispatch:
     inputs:
-      runName:
-        description: 'Enter a name for this test run'
+      project:
+        description: 'Enter Project Name'
         required: true
+      suite:
+        description: 'Enter Suite Name'
+        required: true
+      env:
+        description: 'Select Test Environment'
+        required: true
+        default: 'QA'
+        type: choice
+        options:
+          - QA
+          - UAT
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +34,9 @@ jobs:
         run: |
           npx wdio run ./wdio.conf.js --spec sample.spec.js
         env:
-          RUN_NAME: ${{ github.event.inputs.runName }}
+          PROJECT: ${{ github.event.inputs.project }}
+          SUITE_NAME: ${{ github.event.inputs.suite }}
+          ENV: ${{ github.event.env }}
           GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
       - name: Upload Test Summary Excel
