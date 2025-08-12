@@ -235,10 +235,10 @@ export default class GoogleSheetsSummary {
                                                 sources: [
                                                     {
                                                         sheetId,
-                                                        startRowIndex: 1,  // skip headers
+                                                        startRowIndex: 1,  // skip header
                                                         endRowIndex: totalRows,
-                                                        startColumnIndex: 4, // assume pass % in col E (index 4)
-                                                        endColumnIndex: 5,
+                                                        startColumnIndex: 0, // column A: Suite Name or Run Name
+                                                        endColumnIndex: 1,
                                                     },
                                                 ],
                                             },
