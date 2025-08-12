@@ -170,6 +170,7 @@ export default class GoogleSheetsSummary {
                 resource: resource,
             });
             console.log('Successfully wrote summary to Google Sheet.');
+            await this.updatePassTrendChart(this.runName);
         } catch (error) {
             console.error('Error writing to Google Sheet:', error);
         }
@@ -202,10 +203,89 @@ export default class GoogleSheetsSummary {
         }
     }
 
-    calculatePassPercentage() {
-        const summaryStats = this.calculateSummaryStats();
-        const totalCount = summaryStats.total;
-        const passedCount = summaryStats.passed;
-        return ((passedCount / totalCount) * 100).toFixed(2);
+    async updatePassTrendChart(sheetName) {
+        try {
+            // 1. Fetch metadata to find sheetId and row count
+            const meta = await this.sheetsClient.spreadsheets.get({
+                spreadsheetId: this.spreadsheetId,
+                includeGridData: false,
+            });
+
+            const sheet = meta.data.sheets.find(s => s.properties.title === sheetName);
+            const sheetId = sheet.properties.sheetId;
+            const totalRows = sheet.properties.gridProperties.rowCount;
+
+            // 2. Define the chart creation/update request
+            const chartRequest = {
+                addChart: {
+                    chart: {
+                        spec: {
+                            title: 'Pass % Trend',
+                            basicChart: {
+                                chartType: 'LINE',
+                                legendPosition: 'BOTTOM_LEGEND',
+                                axis: [
+                                    { position: 'BOTTOM_AXIS', title: 'Run # (chronological)' },
+                                    { position: 'LEFT_AXIS', title: 'Pass Percentage' },
+                                ],
+                                domains: [
+                                    {
+                                        domain: {
+                                            sourceRange: {
+                                                sources: [
+                                                    {
+                                                        sheetId,
+                                                        startRowIndex: 1,  // skip headers
+                                                        endRowIndex: totalRows,
+                                                        startColumnIndex: 4, // assume pass % in col E (index 4)
+                                                        endColumnIndex: 5,
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                    },
+                                ],
+                                series: [
+                                    {
+                                        series: {
+                                            sourceRange: {
+                                                sources: [
+                                                    {
+                                                        sheetId,
+                                                        startRowIndex: 1,
+                                                        endRowIndex: totalRows,
+                                                        startColumnIndex: 4, // pass %
+                                                        endColumnIndex: 5,
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                        targetAxis: 'LEFT_AXIS',
+                                    },
+                                ],
+                                headerCount: 1,
+                            },
+                        },
+                        position: {
+                            overlayPosition: {
+                                anchorCell: { sheetId, rowIndex: 0, columnIndex: 6 },
+                                offsetXPixels: 10,
+                                offsetYPixels: 10,
+                            },
+                        },
+                    },
+                },
+            };
+
+            // 3. Send the batchUpdate request to add or update the chart
+            await this.sheetsClient.spreadsheets.batchUpdate({
+                spreadsheetId: this.spreadsheetId,
+                requestBody: { requests: [chartRequest] },
+            });
+
+            console.log(`Trend chart updated in sheet "${sheetName}"`);
+        } catch (err) {
+            console.error(`Failed to update Trend chart in "${sheetName}"`, err);
+        }
     }
 }
