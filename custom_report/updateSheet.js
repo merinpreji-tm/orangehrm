@@ -1,13 +1,13 @@
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-import dotenv from 'dotenv';
+// import { fileURLToPath } from 'url';
+// import { dirname, resolve } from 'path';
+// import dotenv from 'dotenv';
 
-// ESM-safe __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// // ESM-safe __dirname
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
-// Load .env from env folder
-dotenv.config({ path: resolve(__dirname, 'env/.env') });
+// // Load .env from env folder
+// dotenv.config({ path: resolve(__dirname, 'env/.env') });
 
 import { google } from 'googleapis';
 import fs from 'fs/promises'; // Use fs.promises for async file operations
@@ -36,8 +36,8 @@ export default class GoogleSheetsSummary {
         }
     }
 
-    async addTestSummaryToSheet() {
-        const folderPath = "test/.artifacts/json-reports";
+    async addTestSummaryToSheet(folderPath) {
+        // const folderPath = "test/.artifacts/json-reports";
         if (!this.sheetsClient) {
             await this.initializeSheetsClient();
         }
@@ -123,12 +123,12 @@ export default class GoogleSheetsSummary {
 }
 
 // Main execution block
-async function main() {
-    // You'll need to specify the folder where your test results are stored.
-    // WebdriverIO with Allure reporter typically uses a folder like './allure-results'
-    const resultsFolder = './allure-results'; 
-    const summary = new GoogleSheetsSummary();
-    await summary.addTestSummaryToSheet(resultsFolder);
-}
+// async function main() {
+//     // You'll need to specify the folder where your test results are stored.
+//     // WebdriverIO with Allure reporter typically uses a folder like './allure-results'
+//     const resultsFolder = './allure-results'; 
+//     const summary = new GoogleSheetsSummary();
+//     await summary.addTestSummaryToSheet(resultsFolder);
+// }
 
-main().catch(console.error);
+// main().catch(console.error);
