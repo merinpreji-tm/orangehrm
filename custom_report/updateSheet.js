@@ -109,7 +109,7 @@ export default class GoogleSheetsSummary {
             console.log('No test results to write to Google Sheet.');
             return;
         }
-        await this.addHeaderRow(this.runName);
+        await this.addHeaderRow('Summary');
         await this.ensureSheetExists(this.runName);
         const values = summaryStats.map(stat => [
             stat.suiteName,
