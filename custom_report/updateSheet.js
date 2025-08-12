@@ -81,6 +81,7 @@ export default class GoogleSheetsSummary {
             console.log('No test results to write to Google Sheet.');
             return;
         }
+        await this.ensureSheetExists(this.runName);
         const values = summaryStats.map(stat => [
             stat.suiteName,
             stat.total,
@@ -99,6 +100,33 @@ export default class GoogleSheetsSummary {
             console.log('Successfully wrote summary to Google Sheet.');
         } catch (error) {
             console.error('Error writing to Google Sheet:', error);
+        }
+    }
+
+    async ensureSheetExists(sheetTitle) {
+        try {
+            const sheetsMeta = await this.sheetsClient.spreadsheets.get({ spreadsheetId: this.spreadsheetId, });
+            const sheetExists = sheetsMeta.data.sheets.some( sheet => sheet.properties.title === sheetTitle );
+            if (!sheetExists) {
+                console.log(`Creating sheet: ${sheetTitle}`);
+                await this.sheetsClient.spreadsheets.batchUpdate({
+                    spreadsheetId: this.spreadsheetId,
+                    requestBody: {
+                        requests: [
+                            {
+                                addSheet: {
+                                    properties: {
+                                        title: sheetTitle,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                });
+            }
+        } catch (error) {
+            console.error('Error checking/creating sheet:', error);
+            throw error;
         }
     }
 }
