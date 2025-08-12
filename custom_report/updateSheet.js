@@ -64,17 +64,59 @@ export default class GoogleSheetsSummary {
                 spreadsheetId: this.spreadsheetId,
                 range: `${sheetName}!A1:E1`,
             });
+
             const rows = response.data.values;
+
             if (!rows || rows.length === 0) {
                 const headers = [
                     ['Suite Name', 'Total tests', 'Passed', 'Failed', 'Pass Percentage']
                 ];
+
                 await this.sheetsClient.spreadsheets.values.update({
                     spreadsheetId: this.spreadsheetId,
                     range: `${sheetName}!A1`,
                     valueInputOption: 'RAW',
                     resource: { values: headers },
                 });
+
+                // Get sheet ID to apply formatting
+                const spreadsheet = await this.sheetsClient.spreadsheets.get({
+                    spreadsheetId: this.spreadsheetId,
+                });
+
+                const sheet = spreadsheet.data.sheets.find(
+                    s => s.properties.title === sheetName
+                );
+                const sheetId = sheet?.properties?.sheetId;
+
+                if (sheetId !== undefined) {
+                    await this.sheetsClient.spreadsheets.batchUpdate({
+                        spreadsheetId: this.spreadsheetId,
+                        requestBody: {
+                            requests: [
+                                {
+                                    repeatCell: {
+                                        range: {
+                                            sheetId: sheetId,
+                                            startRowIndex: 0,
+                                            endRowIndex: 1,
+                                            startColumnIndex: 0,
+                                            endColumnIndex: 5,
+                                        },
+                                        cell: {
+                                            userEnteredFormat: {
+                                                textFormat: { bold: true },
+                                            },
+                                        },
+                                        fields: 'userEnteredFormat.textFormat.bold',
+                                    },
+                                },
+                            ],
+                        },
+                    });
+                } else {
+                    console.warn(`Sheet ID not found for "${sheetName}"`);
+                }
             }
         } catch (error) {
             console.error(`Failed to check/add header for sheet "${sheetName}":`, error);
