@@ -390,8 +390,8 @@ export const config = {
         await excelConverter.convertJSONFolderToExcel('test/.artifacts/json-reports');
         await csvConverter.convertJSONFolderToCSV('test/.artifacts/json-reports');
         await excelSummary.addTestSummaryToExcel('test/.artifacts/json-reports');
-        const summary = new GoogleSheetsSummary('test/.artifacts/json-reports');
-        await summary.addTestSummaryToSheet();
+        const summary = new GoogleSheetsSummary();
+        await summary.addTestSummaryToSheet('test/.artifacts/json-reports');
         return new Promise((resolve, reject) => {
             const generationTimeout = setTimeout(() => reject(reportError), 30000); // 30 seconds
             generation.on('exit', function (exitCode) {
