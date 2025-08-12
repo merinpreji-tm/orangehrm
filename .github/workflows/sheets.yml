@@ -22,9 +22,6 @@ jobs:
       - name: Run Selected Test
         run: |
           npx wdio run ./wdio.conf.js --spec sample.spec.js
-      - name: Run your script
-        run: |
-          node updateSheet.js
         env:
           RUN_NAME: ${{ github.event.inputs.runName }}
           GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
