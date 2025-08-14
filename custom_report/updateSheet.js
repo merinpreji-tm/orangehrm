@@ -179,7 +179,7 @@ export default class GoogleSheetsSummary {
                 resource: resource,
             });
             console.log('Successfully wrote summary to Google Sheet.');
-            await this.updatePassTrendChart(this.suiteName);
+            // await this.updatePassTrendChart(this.suiteName);
         } catch (error) {
             console.error('Error writing to Google Sheet:', error);
         }
@@ -246,7 +246,7 @@ export default class GoogleSheetsSummary {
                                                         sheetId,
                                                         startRowIndex: 1,  // skip header
                                                         endRowIndex: totalRows,
-                                                        startColumnIndex: 0, // column A: Suite Name or Run Name
+                                                        startColumnIndex: 0, // column A: Date
                                                         endColumnIndex: 1,
                                                     },
                                                 ],
@@ -263,8 +263,8 @@ export default class GoogleSheetsSummary {
                                                         sheetId,
                                                         startRowIndex: 1,
                                                         endRowIndex: totalRows,
-                                                        startColumnIndex: 4, // pass %
-                                                        endColumnIndex: 5,
+                                                        startColumnIndex: 8, // pass %
+                                                        endColumnIndex: 9,
                                                     },
                                                 ],
                                             },
