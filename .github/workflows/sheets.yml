@@ -16,6 +16,9 @@ on:
         options:
           - QA
           - UAT
+      deployment:
+        description: 'Enter Deployment Name'
+        required: true
       spec:
         description: 'Select spec file to run'
         required: true
@@ -45,6 +48,7 @@ jobs:
           PROJECT: ${{ github.event.inputs.project }}
           SUITE_NAME: ${{ github.event.inputs.suite }}
           ENV: ${{ github.event.inputs.env }}
+          DEPLOYMENT_NAME: ${{ github.event.inputs.deployment }}
           GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
       - name: Upload Test Summary Excel

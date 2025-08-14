@@ -9,6 +9,7 @@ export default class GoogleSheetsSummary {
         this.project = process.env.PROJECT || '';
         this.suiteName = process.env.SUITE_NAME || '';
         this.env = process.env.ENV || '';
+        this.deploymentName = process.env.DEPLOYMENT_NAME || '';
         this.testResults = [];
         this.sheetsClient = null;
     }
@@ -71,7 +72,7 @@ export default class GoogleSheetsSummary {
 
             if (!rows || rows.length === 0) {
                 const headers = [
-                    ['Date', 'Project', 'Suite Name', 'Test Environment', 'Total tests', 'Passed', 'Failed', 'Pass Percentage']
+                    ['Date', 'Project', 'Suite Name', 'Test Environment', 'Deployment Name', 'Total tests', 'Passed', 'Failed', 'Pass Percentage']
                 ];
 
                 await this.sheetsClient.spreadsheets.values.update({
@@ -103,7 +104,7 @@ export default class GoogleSheetsSummary {
                                             startRowIndex: 0,
                                             endRowIndex: 1,
                                             startColumnIndex: 0,
-                                            endColumnIndex: 8,
+                                            endColumnIndex: 9,
                                         },
                                         cell: {
                                             userEnteredFormat: {
@@ -130,7 +131,7 @@ export default class GoogleSheetsSummary {
         for (const test of this.testResults) {
             const suite = this.suiteName;
             if (!statsMap[suite]) {
-                statsMap[suite] = { project: this.project, suiteName: suite, env: this.env, total: 0, passed: 0, failed: 0 };
+                statsMap[suite] = { project: this.project, suiteName: suite, env: this.env, deployment: this.deploymentName, total: 0, passed: 0, failed: 0 };
             }
             statsMap[suite].total++;
             if (test.status === 'PASSED') {
@@ -162,6 +163,7 @@ export default class GoogleSheetsSummary {
             stat.project,
             stat.suiteName,
             stat.env,
+            stat.deployment,
             stat.total,
             stat.passed,
             stat.failed,
